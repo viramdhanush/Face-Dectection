@@ -1,0 +1,50 @@
+Face Detection
+import cv2
+import face_recognition
+
+# Load an image
+image_path = 'path_to_your_image.jpg'
+image = cv2.imread(image_path)
+
+# Convert image to RGB (face_recognition expects RGB format)
+rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+# Detect faces
+face_locations = face_recognition.face_locations(rgb_image)
+
+# Draw bounding boxes around detected faces
+for (top, right, bottom, left) in face_locations:
+    cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)
+
+# Display the result
+cv2.imshow('Face Detection', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+Face Recognition
+import face_recognition
+
+# Load known faces and their names
+known_face_encodings = []
+known_face_names = []
+
+# Load an image and encode the face
+image_path = 'path_to_known_face_image.jpg'
+known_image = face_recognition.load_image_file(image_path)
+known_face_encodings.append(face_recognition.face_encodings(known_image)[0])
+known_face_names.append("Person Name")
+
+# Load an unknown image
+unknown_image_path = 'path_to_unknown_face_image.jpg'
+unknown_image = face_recognition.load_image_file(unknown_image_path)
+unknown_face_encodings = face_recognition.face_encodings(unknown_image)
+
+# Compare faces
+for unknown_face_encoding in unknown_face_encodings:
+    results = face_recognition.compare_faces(known_face_encodings, unknown_face_encoding)
+    name = "Unknown"
+    if True in results:
+        first_match_index = results.index(True)
+        name = known_face_names[first_match_index]
+    print(f"Detected: {name}")
